@@ -15,17 +15,18 @@ public class MyTest {
 		String voteMark = "config/voteMark.png";
 		String sendVote = "config/sendVote.png";
 		try {
-			for(int i= 0;i<8;i++){
-				
-				BaseRobot.click(strong);
-				Thread.sleep(2000);
-			}
-//			Thread.sleep(2000);
-//			BaseRobot.click(vote);
-//			ClipboardUtil.setSysClipboardText("用了3年多,没上过一次神评,都是凭运气。我觉得段子有后台,他们会推送那些搞笑的评论,而其他人习惯性地点前面几个");
-//			BaseRobot.paste(0);
-//			Thread.sleep(2000);
-//			BaseRobot.click(sendVote);
+//			for(int i= 0;i<8;i++){
+//				
+//				BaseRobot.click(strong);
+//				Thread.sleep(2000);
+//			}
+			BaseRobot.click(voteMark);
+			Thread.sleep(2000);
+			BaseRobot.click(vote);
+			ClipboardUtil.setSysClipboardText("用了3年多,没上过一次神评,都是凭运气。我觉得段子有后台,他们会推送那些搞笑的评论,而其他人习惯性地点前面几个");
+			BaseRobot.paste(0);
+			Thread.sleep(2000);
+			BaseRobot.click(sendVote);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
