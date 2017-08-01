@@ -22,5 +22,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="D:/360极速浏览器下载/alipay-sdk-JAVA-20170725114609/alipay-sdk-java20170725114550.jar" sourcepath="D:/360极速浏览器下载/alipay-sdk-JAVA-20170725114609/alipay-sdk-java20170725114550-source.jar"/>
+	<classpathentry kind="lib" path="D:/360极速浏览器下载/alipay-sdk-JAVA-20170725114609/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
