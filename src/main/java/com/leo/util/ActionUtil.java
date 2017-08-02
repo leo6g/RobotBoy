@@ -7,16 +7,17 @@ public class ActionUtil {
 	protected static Logger logger = LoggerFactory.getLogger("ActionUtil");
 	public static synchronized String do2(String machineCode){
 		String regCode = "";
+		BaseRobot robot = new BaseRobot();
 		try {
 			long start = System.currentTimeMillis();
-			BaseRobot.click("image/win7/777.png",276,165);
-			BaseRobot.selectAll(0);
-			BaseRobot.del(1,0,0);
+			robot.click("image/win7/777.png",276,165);
+			robot.selectAll(0);
+			robot.del(1,0,0);
 			ClipboardUtil.setSysClipboardText(machineCode);
-			BaseRobot.paste(0);
-			BaseRobot.click("image/win7/777.png",109,483);
-			BaseRobot.click("image/win7/777.png",470,363);
-			BaseRobot.move(0, 0);
+			robot.paste(0);
+			robot.click("image/win7/777.png",109,483);
+			robot.click("image/win7/777.png",470,363);
+			robot.move(0, 0);
 			regCode=ClipboardUtil.getSysClipboardText();
 			if(machineCode.equals(regCode)){
 				//读取时复制注册码失败
@@ -31,16 +32,17 @@ public class ActionUtil {
 	}
 	public static synchronized String do1(String machineCode){
 		String regCode = "";
+		BaseRobot robot = new BaseRobot();
 		try {
 			long start = System.currentTimeMillis();
-			BaseRobot.click("image/win7/888.png",276,165);
-			BaseRobot.selectAll(0);
-			BaseRobot.del(1,0,0);
+			robot.click("image/win7/888.png",276,165);
+			robot.selectAll(0);
+			robot.del(1,0,0);
 			ClipboardUtil.setSysClipboardText(machineCode);
-			BaseRobot.paste(0);
-			BaseRobot.click("image/win7/888.png",109,483);
-			BaseRobot.click("image/win7/888.png",470,363);
-			BaseRobot.move(0, 0);
+			robot.paste(0);
+			robot.click("image/win7/888.png",109,483);
+			robot.click("image/win7/888.png",470,363);
+			robot.move(0, 0);
 			regCode=ClipboardUtil.getSysClipboardText();
 			if(machineCode.equals(regCode)){
 				//读取时复制注册码失败

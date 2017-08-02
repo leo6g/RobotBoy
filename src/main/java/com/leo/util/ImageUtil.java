@@ -25,8 +25,8 @@ public class ImageUtil {
 	    int[][][] findImgData;            //查找结果，目标图标位于屏幕截图上的坐标数据 
 	    boolean Finded;
 	    String keyImagePath;
-	    
-	    public ImageUtil(String keyImagePath) {
+	    float precision;                 //匹配图片的精确度0.00f-1.00f
+	    public ImageUtil(String keyImagePath,float precision) {
 	    	keyImagePath = getFile(keyImagePath);
 	        screenShotImage = this.getFullScreenShot();
 	        keyImage = this.getBfImageFromPath(keyImagePath);
@@ -36,7 +36,7 @@ public class ImageUtil {
 	        scrShotImgHeight = screenShotImage.getHeight();
 	        keyImgWidth = keyImage.getWidth();
 	        keyImgHeight = keyImage.getHeight();
-	        
+	        this.precision = precision;
 	        //开始查找
 	        this.findImage();
 	        
@@ -114,7 +114,12 @@ public class ImageUtil {
 	                        && (keyImageRGBData[keyImgHeight-1][keyImgWidth-1]^screenShotImageRGBData[y+keyImgHeight-1][x+keyImgWidth-1])==0
 	                        && (keyImageRGBData[keyImgHeight-1][0]^screenShotImageRGBData[y+keyImgHeight-1][x])==0) {
 	                    
-	                    boolean isFinded = isMatchAll(y, x);
+	                	boolean isFinded ;
+	                    if(this.precision==1.00f){
+	                    	isFinded = isMatchAll(y, x);
+	                    }else{
+	                    	isFinded = isMatchAll(y, x,this.precision);
+	                    }
 	                    this.Finded = isFinded;
 	                    //如果比较结果完全相同，则说明图片找到，填充查找到的位置坐标数据到查找结果数组。
 	                    if(isFinded) {
@@ -127,6 +132,35 @@ public class ImageUtil {
 	        }
 	    }
 	    
+	    /**
+	     * 判断屏幕截图上目标图映射范围内的全部点是否全部和小图的点一一对应。
+	     * @param y - 与目标图左上角像素点想匹配的屏幕截图y坐标
+	     * @param x - 与目标图左上角像素点想匹配的屏幕截图x坐标
+	     * @param precision - 精确度
+	     * @return
+	     */
+	    public boolean isMatchAll(int y, int x,float precision) {
+	        int biggerY = 0;
+	        int biggerX = 0;
+	        int xor = 0;
+	        Integer disMatch = 0;
+	        for(int smallerY=0; smallerY<keyImgHeight; smallerY++) {
+	            biggerY = y+smallerY;
+	            for(int smallerX=0; smallerX<keyImgWidth; smallerX++) {
+	                biggerX = x+smallerX;
+	                if(biggerY>=scrShotImgHeight || biggerX>=scrShotImgWidth) {
+	                    return false;
+	                }
+	                xor = keyImageRGBData[smallerY][smallerX]^screenShotImageRGBData[biggerY][biggerX];
+	                if(xor!=0) {
+	                	disMatch++;
+	                }
+	            }
+	            biggerX = x;
+	        }
+	        if((disMatch.floatValue()/Integer.valueOf(keyImgHeight*keyImgWidth).floatValue())+precision>1.00000000f) return false;
+	        return true;
+	    }
 	    /**
 	     * 判断屏幕截图上目标图映射范围内的全部点是否全部和小图的点一一对应。
 	     * @param y - 与目标图左上角像素点想匹配的屏幕截图y坐标
