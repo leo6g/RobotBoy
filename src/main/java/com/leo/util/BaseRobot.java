@@ -32,7 +32,22 @@ public class BaseRobot {
 		super();
 	}
 
-
+	/**
+	 * 返回图片是否是屏幕中出现
+	 * 
+	 * @param fileName
+	 * 
+	 * 
+	 * @throws Exception
+	 */
+	public boolean isShow(String fileName) {
+		ImageUtil image = new ImageUtil(fileName, precision);
+		if (image.Finded) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	/**
 	 * 移动到图像左上角的相对位置
 	 * 
