@@ -25,8 +25,9 @@ public class ImageUtil {
 	    int[][][] findImgData;            //查找结果，目标图标位于屏幕截图上的坐标数据 
 	    boolean Finded;
 	    String keyImagePath;
-	    float precision;                 //匹配图片的精确度0.00f-1.00f
-	    public ImageUtil(String keyImagePath,float precision) {
+	    float precision=1.00f;                 //匹配图片的精确度0.00f-1.00f
+	    int abbr=0; //色差误差
+	    public ImageUtil(String keyImagePath,float precision,int abbr) {
 	    	keyImagePath = getFile(keyImagePath);
 	        screenShotImage = this.getFullScreenShot();
 	        keyImage = this.getBfImageFromPath(keyImagePath);
@@ -37,6 +38,7 @@ public class ImageUtil {
 	        keyImgWidth = keyImage.getWidth();
 	        keyImgHeight = keyImage.getHeight();
 	        this.precision = precision;
+	        this.abbr = abbr;
 	        //开始查找
 	        this.findImage();
 	        
@@ -97,7 +99,24 @@ public class ImageUtil {
 	        return result;
 	    }
 	    
-	    
+	    private int[] intToBytes(int value)   
+		{   
+			int[] byte_src = new int[3];  
+		    byte_src[0] = ((value & 0x00FF0000)>>16);  
+		    byte_src[1] = ((value & 0x0000FF00)>>8);    
+		    byte_src[2] = ((value & 0x000000FF));          
+		    return byte_src;  
+		}
+	    private boolean compareRGB(int value1,int value2)   
+		{   
+			 int[] is1 = intToBytes(value1);
+			 int[] is2 = intToBytes(value2);
+			 boolean flag = true;
+			 for(int i =0;i<3;i++){
+				 if(Math.abs((is1[i]-is2[i]))>=abbr) flag = false;
+			 }
+		    return flag;  
+		}
 	    /**
 	     * 查找图片
 	     */
@@ -109,17 +128,12 @@ public class ImageUtil {
 	                //根据目标图的尺寸，得到目标图四个角映射到屏幕截图上的四个点，
 	                //判断截图上对应的四个点与图B的四个角像素点的值是否相同，
 	                //如果相同就将屏幕截图上映射范围内的所有的点与目标图的所有的点进行比较。
-	                if((keyImageRGBData[0][0]^screenShotImageRGBData[y][x])==0
-	                        && (keyImageRGBData[0][keyImgWidth-1]^screenShotImageRGBData[y][x+keyImgWidth-1])==0
-	                        && (keyImageRGBData[keyImgHeight-1][keyImgWidth-1]^screenShotImageRGBData[y+keyImgHeight-1][x+keyImgWidth-1])==0
-	                        && (keyImageRGBData[keyImgHeight-1][0]^screenShotImageRGBData[y+keyImgHeight-1][x])==0) {
+	                if(compareRGB(keyImageRGBData[0][0],screenShotImageRGBData[y][x])
+	                        && compareRGB(keyImageRGBData[0][keyImgWidth-1],screenShotImageRGBData[y][x+keyImgWidth-1])
+	                        && compareRGB(keyImageRGBData[keyImgHeight-1][keyImgWidth-1],screenShotImageRGBData[y+keyImgHeight-1][x+keyImgWidth-1])
+	                        && compareRGB(keyImageRGBData[keyImgHeight-1][0],screenShotImageRGBData[y+keyImgHeight-1][x])) {
 	                    
-	                	boolean isFinded ;
-	                    if(this.precision==1.00f){
-	                    	isFinded = isMatchAll(y, x);
-	                    }else{
-	                    	isFinded = isMatchAll(y, x,this.precision);
-	                    }
+	                	boolean isFinded = isMatchAll(y, x,this.precision,abbr);
 	                    this.Finded = isFinded;
 	                    //如果比较结果完全相同，则说明图片找到，填充查找到的位置坐标数据到查找结果数组。
 	                    if(isFinded) {
@@ -132,17 +146,9 @@ public class ImageUtil {
 	        }
 	    }
 	    
-	    /**
-	     * 判断屏幕截图上目标图映射范围内的全部点是否全部和小图的点一一对应。
-	     * @param y - 与目标图左上角像素点想匹配的屏幕截图y坐标
-	     * @param x - 与目标图左上角像素点想匹配的屏幕截图x坐标
-	     * @param precision - 精确度
-	     * @return
-	     */
-	    public boolean isMatchAll(int y, int x,float precision) {
+	    public boolean isMatchAll(int y, int x,float precision,int abbr) {
 	        int biggerY = 0;
 	        int biggerX = 0;
-	        int xor = 0;
 	        Integer disMatch = 0;
 	        for(int smallerY=0; smallerY<keyImgHeight; smallerY++) {
 	            biggerY = y+smallerY;
@@ -151,40 +157,14 @@ public class ImageUtil {
 	                if(biggerY>=scrShotImgHeight || biggerX>=scrShotImgWidth) {
 	                    return false;
 	                }
-	                xor = keyImageRGBData[smallerY][smallerX]^screenShotImageRGBData[biggerY][biggerX];
-	                if(xor!=0) {
+	                boolean xor = compareRGB(keyImageRGBData[smallerY][smallerX],screenShotImageRGBData[biggerY][biggerX]);
+	                if(!xor) {
 	                	disMatch++;
 	                }
 	            }
 	            biggerX = x;
 	        }
 	        if((disMatch.floatValue()/Integer.valueOf(keyImgHeight*keyImgWidth).floatValue())+precision>1.00000000f) return false;
-	        return true;
-	    }
-	    /**
-	     * 判断屏幕截图上目标图映射范围内的全部点是否全部和小图的点一一对应。
-	     * @param y - 与目标图左上角像素点想匹配的屏幕截图y坐标
-	     * @param x - 与目标图左上角像素点想匹配的屏幕截图x坐标
-	     * @return
-	     */
-	    public boolean isMatchAll(int y, int x) {
-	        int biggerY = 0;
-	        int biggerX = 0;
-	        int xor = 0;
-	        for(int smallerY=0; smallerY<keyImgHeight; smallerY++) {
-	            biggerY = y+smallerY;
-	            for(int smallerX=0; smallerX<keyImgWidth; smallerX++) {
-	                biggerX = x+smallerX;
-	                if(biggerY>=scrShotImgHeight || biggerX>=scrShotImgWidth) {
-	                    return false;
-	                }
-	                xor = keyImageRGBData[smallerY][smallerX]^screenShotImageRGBData[biggerY][biggerX];
-	                if(xor!=0) {
-	                    return false;
-	                }
-	            }
-	            biggerX = x;
-	        }
 	        return true;
 	    }
 	    public int[] getLocation(){

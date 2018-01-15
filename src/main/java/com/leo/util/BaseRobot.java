@@ -13,7 +13,8 @@ import org.slf4j.LoggerFactory;
 public class BaseRobot {
 	private Robot robot;
 	private int globalTime = 50;
-	private float precision =1.00f;
+	private float precision;//匹配图片的精确度0.00f-1.00f
+	private int abbr;//色差误差
 	protected Logger logger = LoggerFactory.getLogger("MyRobot");
 	{
 		try {
@@ -23,10 +24,11 @@ public class BaseRobot {
 		}
 	}
 	
-	public BaseRobot(int globalTime, float precision) {
+	public BaseRobot(int globalTime, float precision,int abbr) {
 		super();
 		this.globalTime = globalTime;
 		this.precision = precision;
+		this.abbr = abbr;
 	}
 	public BaseRobot() {
 		super();
@@ -41,7 +43,7 @@ public class BaseRobot {
 	 * @throws Exception
 	 */
 	public boolean isShow(String fileName) {
-		ImageUtil image = new ImageUtil(fileName, precision);
+		ImageUtil image = new ImageUtil(fileName, precision,abbr);
 		if (image.Finded) {
 			return true;
 		} else {
@@ -58,7 +60,7 @@ public class BaseRobot {
 	 */
 	public void move(String fileName, int x, int y) throws Exception {
 
-		ImageUtil image = new ImageUtil(fileName, precision);
+		ImageUtil image = new ImageUtil(fileName, precision,abbr);
 		if (image.Finded) {
 			int[] location = image.getLocation();
 			robot.mouseMove(location[0] + x, location[1] + y);
@@ -75,7 +77,7 @@ public class BaseRobot {
 	 * @throws Exception
 	 */
 	public void move(String fileName) throws Exception {
-		ImageUtil image = new ImageUtil(fileName, precision);
+		ImageUtil image = new ImageUtil(fileName, precision,abbr);
 		if (image.Finded) {
 			int[] location = image.getLocation();
 			int[] keyImage = image.getKeyImageWH();
@@ -146,7 +148,7 @@ public class BaseRobot {
 	 * @throws Exception
 	 */
 	public void click(String fileName) throws Exception {
-		ImageUtil image = new ImageUtil(fileName, precision);
+		ImageUtil image = new ImageUtil(fileName, precision,abbr);
 		if (image.Finded) {
 			int[] location = image.getLocation();
 			int[] keyImage = image.getKeyImageWH();
@@ -159,6 +161,26 @@ public class BaseRobot {
 			throw new Exception(image.keyImagePath + "没有在屏幕内");
 		}
 	}
+	public void click(String fileName,int holdTime) throws Exception {
+		ImageUtil image = new ImageUtil(fileName, precision,abbr);
+		if (image.Finded) {
+			int[] location = image.getLocation();
+			int[] keyImage = image.getKeyImageWH();
+			// 移动重心位置
+			robot.mouseMove(location[0] + (keyImage[0] / 2), location[1] + (keyImage[1] / 2));
+			robot.mousePress(InputEvent.BUTTON1_MASK);
+			Thread.sleep(holdTime);
+			robot.mouseRelease(InputEvent.BUTTON1_MASK);
+			globalWait(globalTime);
+		} else {
+			throw new Exception(image.keyImagePath + "没有在屏幕内");
+		}
+	}
+	
+	public int[] getLocation(String fileName) throws Exception {
+		ImageUtil image = new ImageUtil(fileName, precision,abbr);
+		return image.getLocation();
+	}
 
 	/**
 	 * 移动到图像左上角的相对位置并点击一次
@@ -169,7 +191,7 @@ public class BaseRobot {
 	 * @throws Exception
 	 */
 	public void click(String fileName, int x, int y) throws Exception {
-		ImageUtil image = new ImageUtil(fileName, precision);
+		ImageUtil image = new ImageUtil(fileName, precision,abbr);
 		if (image.Finded) {
 			int[] location = image.getLocation();
 			robot.mouseMove(location[0] + x, location[1] + y);

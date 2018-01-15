@@ -1,12 +1,11 @@
 package com.leo.robot;
 
 import com.leo.util.BaseRobot;
-import com.leo.util.ClipboardUtil;
 
 public class DuanZiBoy {
-	private BaseRobot robot = new BaseRobot(50,0.65f);
-	private BaseRobot robot50 = new BaseRobot(50,0.50f);
-	private BaseRobot exactRobot = new BaseRobot(50,1.00f);
+	private BaseRobot robot = new BaseRobot(50,0.65f,0);
+	private BaseRobot robot50 = new BaseRobot(50,0.50f,0);
+	private BaseRobot exactRobot = new BaseRobot(50,1.00f,0);
 	private String strong = "config/strong.png";
 	private String vote = "config/vote.png";
 	private String voteMark = "config/voteMark.png";
