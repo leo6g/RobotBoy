@@ -190,6 +190,27 @@ public class BaseRobot {
 	 * @param y
 	 * @throws Exception
 	 */
+	public void click(String fileName, int x, int y,int holdTime) throws Exception {
+		ImageUtil image = new ImageUtil(fileName, precision,abbr);
+		if (image.Finded) {
+			int[] location = image.getLocation();
+			robot.mouseMove(location[0] + x, location[1] + y);
+			robot.mousePress(InputEvent.BUTTON1_MASK);
+			Thread.sleep(holdTime);
+			robot.mouseRelease(InputEvent.BUTTON1_MASK);
+			globalWait(globalTime);
+		} else {
+			throw new Exception(image.keyImagePath + "没有在屏幕内");
+		}
+	}
+	/**
+	 * 移动到图像左上角的相对位置并点击一次
+	 * 
+	 * @param fileName
+	 * @param x
+	 * @param y
+	 * @throws Exception
+	 */
 	public void click(String fileName, int x, int y) throws Exception {
 		ImageUtil image = new ImageUtil(fileName, precision,abbr);
 		if (image.Finded) {
